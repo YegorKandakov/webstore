@@ -7,24 +7,49 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.slait.webstore.entity.Product;
 import com.slait.webstore.exception.ProductNotFoundException;
 import com.slait.webstore.repository.ProductRepository;
 
 @Repository
-public class InMemoryProductRepository implements ProductRepository {
+public class HibernateProductRepository implements ProductRepository {
 
-	
+	private List<Product> listOfBasicProducts; 
+	private List<Product> listOfProducts; 
+
 	@Autowired
   private SessionFactory sessionFactory;
+	private Session session;
 	
-	private List<Product> listOfProducts = new ArrayList<Product>();
+	@Transactional
+  public void save(Product product) {
+      session = sessionFactory.getCurrentSession();
+      session.save(product);
+  }
+	
+	public HibernateProductRepository() {
+		session = sessionFactory.getCurrentSession();
+		try {
+			listOfProducts = (List<Product>)session.createQuery("from Products").list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
+		if(listOfProducts.size() == 0) {
+			System.out.println("db is empty");
+			createBasicProducts();
+			putBasicProductsToDatabase();
+			System.out.println("db is filled with basic products");
+		}
+	}
 
-	public InMemoryProductRepository() {
+	private void createBasicProducts() {
 		Product iphone = new Product("P1234", "iPhone 6s", new BigDecimal(500));
 		iphone.setDescription("Apple iPhone 6s smartphone with"
 				+ "4.00-inch 640x1136 display and 8-megapixar rear camera");
@@ -47,12 +72,20 @@ public class InMemoryProductRepository implements ProductRepository {
 		tablet_Nexus.setCategory("Tablet");
 		tablet_Nexus.setManufacturer("Google");
 		tablet_Nexus.setUnitsInStock(1000);
-
-		listOfProducts.add(iphone);
-		listOfProducts.add(laptop_dell);
-		listOfProducts.add(tablet_Nexus);
-
+		
+		listOfBasicProducts.add(iphone);
+		listOfBasicProducts.add(laptop_dell);
+		listOfBasicProducts.add(tablet_Nexus);
 	}
+	
+	private void putBasicProductsToDatabase() {
+		session.beginTransaction();
+		for(Product product : listOfBasicProducts) {
+			session.save(product);
+		}
+		session.getTransaction().commit();
+	}
+
 
 	@Override
 	public List<Product> getAllProducts() {
