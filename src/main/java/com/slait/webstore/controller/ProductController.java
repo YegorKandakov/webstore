@@ -2,6 +2,7 @@ package com.slait.webstore.controller;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;
+import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 
@@ -111,7 +112,7 @@ public class ProductController {
 			throw new RuntimeException("Attempting to bing disallowed " + "fields: "
 					+ StringUtils.arrayToCommaDelimitedString(suppressedFields));
 		}
-		MultipartFile productImage = productToBeAdded.getProductImage();
+		Blob productImage = productToBeAdded.getProductImage();
 		String rootDirectory = request.getSession().getServletContext()
 				.getRealPath("/");
 		if (productImage != null && !productImage.isEmpty()) {

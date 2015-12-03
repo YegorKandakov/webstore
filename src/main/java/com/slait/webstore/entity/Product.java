@@ -2,7 +2,12 @@ package com.slait.webstore.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.sql.Blob;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -16,20 +21,26 @@ import org.springframework.web.multipart.MultipartFile;
 import com.slait.webstore.validator.Category;
 import com.slait.webstore.validator.ProductId;
 
+@Entity
+@Table(name="Products")
 @XmlRootElement
 public class Product implements Serializable {
 
 	private static final long serialVersionUID = 6818337297966359020L;
 
+	@Id
+	@Column(name="ProductId")
 	@Pattern(regexp="P[0-9]+", message=
 			"{Pattern.Product.productId.validation}")
 	@ProductId
 	private String productId;
 	
+	@Column(name="ProductName")
 	@Size(min=4, max=50, message=
 			"{Size.Product.name.validation}")
 	private String name;
 	
+	@Column(name="UnitPrice")
 	@Min(value=0, message=
 			"{Min.Product.unitPrice.validation}")
 	@Digits(integer=8, fraction=2, message=
@@ -38,23 +49,37 @@ public class Product implements Serializable {
 			"{NotNull.Product.unitPrice.validation}")
 	private BigDecimal unitPrice;
 	
+	@Column(name="Description")
 	private String description;
+	
+	@Column(name="Manufacturer")
 	private String manufacturer;
 	
+	@Column(name="Category")
 	@Size(min=1, max=50, message=
 			"{Size.Product.category.validation}")
 	@Category
 	private String category;
 	
+	@Column(name="UnitsInStock")
 	@Min(value=0, message=
 			"{Min.Product.unitsInStock.validation}")
 	private long unitsInStock;
 	
+	@Column(name="UnitsInOrder")
 	private long unitsInOrder;
+	
+	@Column(name="Discontinued")
 	private boolean discontinued;
+	
+	@Column(name="ProductCondition")
 	private String condition;
-	private MultipartFile productImage;
-	private MultipartFile productManual;
+	
+	@Column(name="ProductImage")
+	private Blob productImage;
+	
+	@Column(name="ProductManual")
+	private Blob productManual;
 	
 	public Product() {
 		super();
@@ -148,20 +173,20 @@ public class Product implements Serializable {
 	}
 	
 	@XmlTransient
-	public MultipartFile getProductImage() {
+	public Blob getProductImage() {
 		return productImage;
 	}
 
-	public void setProductImage(MultipartFile productImage) {
+	public void setProductImage(Blob productImage) {
 		this.productImage = productImage;
 	}
 	
 	@XmlTransient
-	public MultipartFile getProductManual() {
+	public Blob getProductManual() {
 		return productManual;
 	}
 
-	public void setProductManual(MultipartFile productPdf) {
+	public void setProductManual(Blob productPdf) {
 		this.productManual = productPdf;
 	}
 	

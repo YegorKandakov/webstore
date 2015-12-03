@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.slait.webstore.entity.Product;
@@ -16,6 +18,10 @@ import com.slait.webstore.repository.ProductRepository;
 @Repository
 public class InMemoryProductRepository implements ProductRepository {
 
+	
+	@Autowired
+  private SessionFactory sessionFactory;
+	
 	private List<Product> listOfProducts = new ArrayList<Product>();
 
 	public InMemoryProductRepository() {
