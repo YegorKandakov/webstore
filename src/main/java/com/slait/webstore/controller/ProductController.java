@@ -115,7 +115,7 @@ public class ProductController {
 		Blob productImage = productToBeAdded.getProductImage();
 		String rootDirectory = request.getSession().getServletContext()
 				.getRealPath("/");
-		if (productImage != null && !productImage.isEmpty()) {
+		if (productImage != null) {
 			try {
 				productImage.transferTo(new File(rootDirectory + "resources\\images\\"
 						+ productToBeAdded.getProductId() + ".jpg"));
@@ -123,7 +123,7 @@ public class ProductController {
 				throw new RuntimeException("Product Image saving failed", e);
 			}
 		}
-		MultipartFile productManual = productToBeAdded.getProductManual();
+		Blob productManual = productToBeAdded.getProductManual();
 		if (productManual != null && !productManual.isEmpty()) {
 			try {
 				productManual.transferTo(new File(rootDirectory + "resources\\pdf\\"

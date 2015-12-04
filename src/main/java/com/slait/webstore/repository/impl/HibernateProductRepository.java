@@ -26,21 +26,15 @@ public class HibernateProductRepository implements ProductRepository {
 
 	@Autowired
   private SessionFactory sessionFactory;
-	private Session session;
 	
 	@Transactional
-  public void save(Product product) {
-      session = sessionFactory.getCurrentSession();
-      session.save(product);
+  public void addProduct(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+    session.save(product);
   }
 	
 	public HibernateProductRepository() {
-		session = sessionFactory.getCurrentSession();
-		try {
-			listOfProducts = (List<Product>)session.createQuery("from Products").list();
-		} catch (HibernateException e) {
-			e.printStackTrace();
-		}
+		listOfProducts = getAllProducts();
 		if(listOfProducts.size() == 0) {
 			System.out.println("db is empty");
 			createBasicProducts();
@@ -78,59 +72,55 @@ public class HibernateProductRepository implements ProductRepository {
 		listOfBasicProducts.add(tablet_Nexus);
 	}
 	
+	@Transactional
 	private void putBasicProductsToDatabase() {
-		session.beginTransaction();
+		Session session = sessionFactory.getCurrentSession();
 		for(Product product : listOfBasicProducts) {
 			session.save(product);
 		}
-		session.getTransaction().commit();
 	}
 
 
-	@Override
+	@Transactional
 	public List<Product> getAllProducts() {
+		Session session = sessionFactory.getCurrentSession();
+		try {
+			listOfProducts = (List<Product>)session.createQuery("from Products").list();
+		} catch (HibernateException e) {
+			e.printStackTrace();
+		}
 		return listOfProducts;
 	}
 
-	@Override
+	@Transactional
 	public Product getProductById(String productId) {
-		Product productById = null;
-		
-		for(Product product : listOfProducts) {
-			if(product!=null && product.getProductId()!=null &&
-					product.getProductId().equals(productId)) {
-				productById = product;
-				break;
-			}
-		}
-		
+		Session session = sessionFactory.getCurrentSession();
+		Product productById = (Product)session.get(Product.class, productId);
 		if(productById == null) {
-			throw new ProductNotFoundException("No products found"
+			throw new ProductNotFoundException("No products found "
 					+ "with the product id: " + productId);
 		}
-		
 		return productById;
 	}
 
-	@Override
+	@Transactional
 	public List<Product> getProductsByCategory(String category) {
+		listOfProducts = getAllProducts();
 		List<Product> productsByCategory = new ArrayList<Product>();
-		
 		for (Product product: listOfProducts) {
 			if(category.equalsIgnoreCase(product.getCategory())) {
 				productsByCategory.add(product);
 			}
 		}
-		
 		return productsByCategory;
 	}
 
-	@Override
+	@Transactional
 	public Set<Product> getProductsByFilter(Map<String, List<String>> 
 		filterParams) {
+		listOfProducts = getAllProducts();
 		Set<Product> productsByBrand = new HashSet<Product>();
 		Set<Product> productsByCategory = new HashSet<Product>();
-		
 		Set<String> criterias = filterParams.keySet();
 		System.out.println(criterias);
 		double low = 0;
@@ -173,15 +163,15 @@ public class HibernateProductRepository implements ProductRepository {
 				}
 			}
 		}
-		
-//		productsByCategory.retainAll(productsByBrand);
+
 		return productsByCategory;
 	}
 
-	@Override
+	@Transactional
 	public List<Product> getProductsByManufacturer(String manufacturer) {
 		System.out.println("Called getProductsByManufacturer(" 
 				+ manufacturer +") ##");
+		listOfProducts = getAllProducts();
 		List<Product> productsByManufacturer = new ArrayList<Product>();
 		
 		for (Product product: listOfProducts) {
@@ -191,11 +181,6 @@ public class HibernateProductRepository implements ProductRepository {
 		}
 		
 		return productsByManufacturer;
-	}
-
-	@Override
-	public void addProduct(Product product) {
-		listOfProducts.add(product);		
 	}
 
 }
