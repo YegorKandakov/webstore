@@ -7,6 +7,7 @@ import java.sql.Blob;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
@@ -76,9 +77,11 @@ public class Product implements Serializable {
 	private String condition;
 	
 	@Column(name="ProductImage")
+	@Lob
 	private Blob productImage;
 	
 	@Column(name="ProductManual")
+	@Lob
 	private Blob productManual;
 	
 	public Product() {

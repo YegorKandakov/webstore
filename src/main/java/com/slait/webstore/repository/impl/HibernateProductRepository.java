@@ -24,7 +24,7 @@ public class HibernateProductRepository implements ProductRepository {
 	private List<Product> listOfBasicProducts; 
 	private List<Product> listOfProducts; 
 
-	@Autowired
+	
   private SessionFactory sessionFactory;
 	
 	@Transactional
@@ -33,7 +33,8 @@ public class HibernateProductRepository implements ProductRepository {
     session.save(product);
   }
 	
-	public HibernateProductRepository() {
+	@Autowired
+	public HibernateProductRepository(SessionFactory sessionFactory) {
 		listOfProducts = getAllProducts();
 		if(listOfProducts.size() == 0) {
 			System.out.println("db is empty");

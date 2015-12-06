@@ -1,6 +1,7 @@
 package com.slait.webstore.controller;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.util.List;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
+import org.hibernate.Hibernate;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -39,9 +42,12 @@ public class ProductController {
 
 	@Autowired
 	private ProductValidator productValidator;
-	
+
 	@Autowired
 	private ProductService productService;
+
+	@Autowired
+	private SessionFactory sessionFactory;
 
 	@RequestMapping
 	public String list(Model model) {
@@ -59,11 +65,9 @@ public class ProductController {
 	public String getProductsByCategory(Model model,
 			@PathVariable("category") String category) {
 		List<Product> products = productService.getProductsByCategory(category);
-
 		if (products == null || products.isEmpty()) {
 			throw new NoProductsFoundUnderCategoryException();
 		}
-
 		model.addAttribute("products", products);
 		return "products";
 	}
@@ -102,40 +106,49 @@ public class ProductController {
 	@RequestMapping(value = "/add", method = RequestMethod.POST)
 	public String processAddNewProductForm(
 			@ModelAttribute("newProduct") @Valid Product productToBeAdded,
-			BindingResult result, HttpServletRequest request) {
+			BindingResult result, HttpServletRequest request,
+			@RequestParam("productImage") MultipartFile productImage,
+			@RequestParam("productManual") MultipartFile productManual) {
 
 		if (result.hasErrors()) {
 			return "addProduct";
 		}
+
+		System.out.println("Name: " + productToBeAdded.getName());
+		System.out.println("Desc: " + productToBeAdded.getDescription());
+		System.out.println("Image: " + productImage.getName());
+		System.out.println("Manual: " + productManual.getName());
+
 		String[] suppressedFields = result.getSuppressedFields();
 		if (suppressedFields.length > 0) {
 			throw new RuntimeException("Attempting to bing disallowed " + "fields: "
 					+ StringUtils.arrayToCommaDelimitedString(suppressedFields));
 		}
-		Blob productImage = productToBeAdded.getProductImage();
-		String rootDirectory = request.getSession().getServletContext()
-				.getRealPath("/");
+
 		if (productImage != null) {
 			try {
-				productImage.transferTo(new File(rootDirectory + "resources\\images\\"
-						+ productToBeAdded.getProductId() + ".jpg"));
+				Blob imageBlob = Hibernate.getLobCreator(sessionFactory
+						.getCurrentSession()).createBlob(productImage.getBytes());
+				productToBeAdded.setProductImage(imageBlob);
 			} catch (Exception e) {
-				throw new RuntimeException("Product Image saving failed", e);
+				throw new RuntimeException("Product Image saving failed ", e);
 			}
 		}
-		Blob productManual = productToBeAdded.getProductManual();
-		if (productManual != null && !productManual.isEmpty()) {
+		
+		if (productManual != null) {
 			try {
-				productManual.transferTo(new File(rootDirectory + "resources\\pdf\\"
-						+ productToBeAdded.getProductId() + ".pdf"));
+				Blob manualBlob = Hibernate.getLobCreator(sessionFactory
+						.getCurrentSession()).createBlob(productManual.getBytes());
+				productToBeAdded.setProductManual(manualBlob);
 			} catch (Exception e) {
-				throw new RuntimeException("Product Manual saving failed", e);
+				throw new RuntimeException("Product Manual saving failed ", e);
 			}
 		}
+
 		productService.addProduct(productToBeAdded);
 		return "redirect:/products";
 	}
-	
+
 	@RequestMapping("/invalidPromoCode")
 	public String invalidPromoCode() {
 		return "invalidPromoCode";
