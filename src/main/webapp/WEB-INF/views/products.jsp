@@ -31,3 +31,4 @@ id=${product.productId}"/>"
 		</c:forEach>
 	</div>
 </section>
+ 
