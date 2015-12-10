@@ -10,7 +10,6 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,14 +26,8 @@ public class HibernateProductRepository implements ProductRepository {
 	
   private SessionFactory sessionFactory;
 	
-	@Transactional
-  public void addProduct(Product product) {
-		Session session = sessionFactory.getCurrentSession();
-    session.save(product);
-  }
-	
-	@Autowired
 	public HibernateProductRepository(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
 		listOfProducts = getAllProducts();
 		if(listOfProducts.size() == 0) {
 			System.out.println("db is empty");
@@ -43,6 +36,12 @@ public class HibernateProductRepository implements ProductRepository {
 			System.out.println("db is filled with basic products");
 		}
 	}
+	
+	@Transactional
+  public void addProduct(Product product) {
+		Session session = sessionFactory.getCurrentSession();
+    session.save(product);
+  }
 
 	private void createBasicProducts() {
 		Product iphone = new Product("P1234", "iPhone 6s", new BigDecimal(500));
@@ -80,7 +79,6 @@ public class HibernateProductRepository implements ProductRepository {
 			session.save(product);
 		}
 	}
-
 
 	@Transactional
 	public List<Product> getAllProducts() {
