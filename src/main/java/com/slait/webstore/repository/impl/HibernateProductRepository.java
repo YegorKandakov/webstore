@@ -23,8 +23,9 @@ public class HibernateProductRepository implements ProductRepository {
 	private List<Product> listOfBasicProducts; 
 	private List<Product> listOfProducts; 
 
-	
   private SessionFactory sessionFactory;
+  
+  public HibernateProductRepository() { }
 	
 	public HibernateProductRepository(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;

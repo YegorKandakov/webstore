@@ -1,26 +1,23 @@
 <?xml	version="1.0"	encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:tx="http://www.springframework.org/schema/tx"
 	xmlns:webflow-config="http://www.springframework.org/schema/webflow-config"
-	xsi:schemaLocation="http://www.springframework.org/schema/beans
-	http://www.springframework.org/schema/beans/spring-beans.xsd
-	http://www.springframework.org/schema/context
-	http://www.springframework.org/schema/context/spring-context-4.0.xsd
-	http://www.springframework.org/schema/mvc
-	http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
-	http://www.springframework.org/schema/webflow-config
-	http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+	http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+	http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-2.3.xsd">
 
+	<context:component-scan base-package="com.slait.webstore" />
 
 	<mvc:annotation-driven enable-matrix-variables="true"
-			validator="validator" >
+		validator="validator">
 	</mvc:annotation-driven>
-	<context:component-scan base-package="com.slait.webstore" />
-	<mvc:resources location="/resources/" mapping="/resource/**" />
-	
-	<mvc:interceptors>
 
+	<mvc:resources location="/resources/" mapping="/resource/**" />
+
+	<mvc:interceptors>
 		<bean class="com.slait.webstore.interceptor.PerformanceMonitorInterceptor" />
 		<bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
 			<property name="paramName" value="language" />
@@ -31,7 +28,6 @@
 			<property name="errorRedirect" value="invalidPromoCode" />
 			<property name="offerRedirect" value="products" />
 		</bean>
-
 	</mvc:interceptors>
 
 	<bean
@@ -114,6 +110,33 @@
 				<value>/WEB-INF/tiles/definitions/tile-definition.xml</value>
 			</list>
 		</property>
+	</bean>
+
+	<bean id="dataSource" class="org.apache.commons.dbcp2.BasicDataSource"
+		destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://localhost:3306/webstore" />
+		<property name="username" value="root" />
+		<property name="password" value="root" />
+	</bean>
+
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:hibernate.cfg.xml" />
+	</bean>
+
+	<tx:annotation-driven />
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="productRepository"
+		class="com.slait.webstore.repository.impl.HibernateProductRepository">
+		<constructor-arg>
+			<ref bean="sessionFactory" />
+		</constructor-arg>
 	</bean>
 
 	<webflow-config:flow-executor id="flowExecutor"
