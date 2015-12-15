@@ -3,7 +3,9 @@
 
 	 <context-param>
    		<param-name>contextConfigLocation</param-name>
-   		<param-value>/WEB-INF/spring/webcontext/applicationContext.xml</param-value>
+   		<param-value>/WEB-INF/spring/webcontext/applicationContext.xml
+   								/WEB-INF/spring/webcontext/security-context.xml
+   		</param-value>
    </context-param>
   
   <servlet>
@@ -19,13 +21,6 @@
     <servlet-name>dispatcher</servlet-name>
     <url-pattern>/</url-pattern>
   </servlet-mapping>
-  
-  <context-param>
-    <param-name>contextConfigLocation</param-name>
-    	<param-value>
-				/WEB-INF/spring/webcontext/security-context.xml
-			</param-value>
-  </context-param>
   
   <listener>
     <listener-class>

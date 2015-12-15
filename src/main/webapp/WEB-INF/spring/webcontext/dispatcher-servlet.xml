@@ -116,12 +116,7 @@
 
 
 
-	<bean id="productRepository"
-		class="com.slait.webstore.repository.impl.HibernateProductRepository">
-		<constructor-arg>
-			<ref bean="sessionFactory" />
-		</constructor-arg>
-	</bean>
+
 
 	<webflow-config:flow-executor id="flowExecutor"
 		flow-registry="flowRegistry" />

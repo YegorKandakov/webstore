@@ -85,7 +85,7 @@ public class HibernateProductRepository implements ProductRepository {
 	public List<Product> getAllProducts() {
 		Session session = sessionFactory.getCurrentSession();
 		try {
-			listOfProducts = (List<Product>)session.createQuery("from Products").list();
+			listOfProducts = (List<Product>)session.createQuery("from Product").list();
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		}
