@@ -11,7 +11,7 @@
 
 	<context:annotation-config/>
 	
-	<context:component-scan base-package="com.slait.webstore" />
+	<context:component-scan base-package="com.slait.webstore.controller" />
 
 	<mvc:annotation-driven enable-matrix-variables="true"
 		validator="validator">
@@ -73,11 +73,6 @@
 		<property name="defaultLocale" value="en" />
 	</bean>
 
-	<bean id="validator"
-		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-		<property name="validationMessageSource" ref="messageSource" />
-	</bean>
-
 	<bean id="productValidator" class="com.slait.webstore.validator.ProductValidator">
 		<property name="springValidators">
 			<set>
@@ -113,10 +108,6 @@
 			</list>
 		</property>
 	</bean>
-
-
-
-
 
 	<webflow-config:flow-executor id="flowExecutor"
 		flow-registry="flowRegistry" />

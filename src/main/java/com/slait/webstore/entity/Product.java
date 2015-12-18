@@ -1,14 +1,18 @@
 package com.slait.webstore.entity;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.sql.Blob;
+import java.sql.SQLException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.sql.rowset.serial.SerialBlob;
+import javax.sql.rowset.serial.SerialException;
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -17,13 +21,14 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.hibernate.Hibernate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.slait.webstore.validator.Category;
 import com.slait.webstore.validator.ProductId;
 
 @Entity
-@Table(name="Products")
+@Table(name="Product")
 @XmlRootElement
 public class Product implements Serializable {
 
@@ -180,8 +185,11 @@ public class Product implements Serializable {
 		return productImage;
 	}
 
-	public void setProductImage(Blob productImage) {
-		this.productImage = productImage;
+	public void setProductImage(MultipartFile productImage) throws IOException, SerialException, SQLException {
+		System.out.println("in setProductImage");
+		byte[] picBytes = productImage.getBytes();
+		Blob imageBlob = new SerialBlob(picBytes);
+		this.productImage = imageBlob;
 	}
 	
 	@XmlTransient
@@ -189,8 +197,11 @@ public class Product implements Serializable {
 		return productManual;
 	}
 
-	public void setProductManual(Blob productPdf) {
-		this.productManual = productPdf;
+	public void setProductManual(MultipartFile productPdf) throws IOException, SerialException, SQLException {
+		System.out.println("in setProductManual");
+		byte[] manualBytes = productPdf.getBytes();
+		Blob manualBlob = new SerialBlob(manualBytes);
+		this.productManual = manualBlob;
 	}
 	
 	@Override

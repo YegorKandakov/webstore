@@ -21,7 +21,6 @@
 		enctype="multipart/form-data">
 		<form:errors path="*" cssClass="alert alert-danger" element="div" />
 		<fieldset>
-			
 
 			<div class="form-group">
 				<label class="control-label col-lg-2 col-lg-2" for="productId">

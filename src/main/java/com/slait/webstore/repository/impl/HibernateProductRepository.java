@@ -10,6 +10,7 @@ import java.util.Set;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,11 +19,13 @@ import com.slait.webstore.exception.ProductNotFoundException;
 import com.slait.webstore.repository.ProductRepository;
 
 @Repository
+@Transactional
 public class HibernateProductRepository implements ProductRepository {
 
 	private List<Product> listOfBasicProducts; 
 	private List<Product> listOfProducts; 
 
+	@Autowired
   private SessionFactory sessionFactory;
   
   public HibernateProductRepository() { }

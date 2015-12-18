@@ -1,14 +1,10 @@
 package com.slait.webstore.controller;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.sql.Blob;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 
 import org.hibernate.Hibernate;
@@ -111,6 +107,7 @@ public class ProductController {
 			@RequestParam("productManual") MultipartFile productManual) {
 
 		if (result.hasErrors()) {
+			System.out.println("Number of errors: " + result.getFieldErrorCount());
 			return "addProduct";
 		}
 
@@ -127,9 +124,9 @@ public class ProductController {
 
 		if (productImage != null) {
 			try {
-				Blob imageBlob = Hibernate.getLobCreator(sessionFactory
-						.getCurrentSession()).createBlob(productImage.getBytes());
-				productToBeAdded.setProductImage(imageBlob);
+//				Blob imageBlob = Hibernate.getLobCreator(sessionFactory
+//						.getCurrentSession()).createBlob(productImage.getBytes());
+				productToBeAdded.setProductImage(productImage);
 			} catch (Exception e) {
 				throw new RuntimeException("Product Image saving failed ", e);
 			}
@@ -137,9 +134,9 @@ public class ProductController {
 		
 		if (productManual != null) {
 			try {
-				Blob manualBlob = Hibernate.getLobCreator(sessionFactory
-						.getCurrentSession()).createBlob(productManual.getBytes());
-				productToBeAdded.setProductManual(manualBlob);
+//				Blob manualBlob = Hibernate.getLobCreator(sessionFactory
+//						.getCurrentSession()).createBlob(productManual.getBytes());
+				productToBeAdded.setProductManual(productManual);
 			} catch (Exception e) {
 				throw new RuntimeException("Product Manual saving failed ", e);
 			}
