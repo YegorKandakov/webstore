@@ -24,6 +24,7 @@ ConstraintValidator<ProductId, String> {
 	public boolean isValid(String value, ConstraintValidatorContext 
 context) {
 		Product product;
+		System.out.println(value + "\n" + context + "\n" + productService);
 		try {
 			product = productService.getProductById(value);
 		} catch(ProductNotFoundException e) {

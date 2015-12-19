@@ -1,4 +1,5 @@
-<%@page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jstl/core"%>
 <%@taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
@@ -11,7 +12,9 @@
 			<div class="pull-right" style="padding-right: 50px">
 				<a href="?language=en">English</a>|<a href="?language=ru">Русский</a>
 			</div>
-			<h3><spring:message code="addProduct.form.title.legend" /></h3>	
+			<h3>
+				<spring:message code="addProduct.form.title.legend" />
+			</h3>
 		</div>
 	</div>
 </section>
@@ -93,20 +96,6 @@
 					<form:input id="unitsInStock" path="unitsInStock" type="number"
 						class="form:input-large" />
 					<form:errors path="unitsInStock" cssClass="text-danger" />
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label class="control-label	col-lg-2" for="condition"> <spring:message
-						code="addProduct.form.condition.label" />
-				</label>
-				<div class="col-lg-10">
-					<form:radiobutton path="condition" value="New" />
-					New
-					<form:radiobutton path="condition" value="Old" />
-					Old
-					<form:radiobutton path="condition" value="Refurbished" />
-					Refurbished
 				</div>
 			</div>
 

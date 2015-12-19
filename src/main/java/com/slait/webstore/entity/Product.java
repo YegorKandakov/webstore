@@ -21,7 +21,6 @@ import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.hibernate.Hibernate;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.slait.webstore.validator.Category;
@@ -74,12 +73,6 @@ public class Product implements Serializable {
 	
 	@Column(name="UnitsInOrder")
 	private long unitsInOrder;
-	
-	@Column(name="Discontinued")
-	private boolean discontinued;
-	
-	@Column(name="ProductCondition")
-	private String condition;
 	
 	@Column(name="ProductImage")
 	@Lob
@@ -153,7 +146,9 @@ public class Product implements Serializable {
 	}
 
 	public void setUnitsInStock(long unitsInStock) {
+		System.out.println("in setunitsinstock");
 		this.unitsInStock = unitsInStock;
+		System.out.println("setunitsinstock() done");
 	}
 
 	public long getUnitsInOrder() {
@@ -162,22 +157,6 @@ public class Product implements Serializable {
 
 	public void setUnitsInOrder(long unitsInOrder) {
 		this.unitsInOrder = unitsInOrder;
-	}
-
-	public boolean isDiscontinued() {
-		return discontinued;
-	}
-
-	public void setDiscontinued(boolean dicontinued) {
-		this.discontinued = dicontinued;
-	}
-
-	public String getCondition() {
-		return condition;
-	}
-
-	public void setCondition(String condition) {
-		this.condition = condition;
 	}
 	
 	@XmlTransient
