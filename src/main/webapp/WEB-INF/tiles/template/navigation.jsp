@@ -10,7 +10,7 @@
       <span class="caret"></span>
     </button>
     <ul class="dropdown-menu">
-      <li><a href="<spring:url value="/products/smartphone"/>">Smart Phone</a></li>
+      <li><a href="<spring:url value="/products/smartphone"/>">Smartphone</a></li>
       <li><a href="<spring:url value="/products/laptop"/>">Laptop</a></li>
       <li><a href="<spring:url value="/products/tablet"/>">Tablet</a></li>
     </ul>

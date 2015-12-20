@@ -165,7 +165,6 @@ public class Product implements Serializable {
 	}
 
 	public void setProductImage(MultipartFile productImage) throws IOException, SerialException, SQLException {
-		System.out.println("in setProductImage");
 		byte[] picBytes = productImage.getBytes();
 		Blob imageBlob = new SerialBlob(picBytes);
 		this.productImage = imageBlob;
@@ -177,7 +176,6 @@ public class Product implements Serializable {
 	}
 
 	public void setProductManual(MultipartFile productPdf) throws IOException, SerialException, SQLException {
-		System.out.println("in setProductManual");
 		byte[] manualBytes = productPdf.getBytes();
 		Blob manualBlob = new SerialBlob(manualBytes);
 		this.productManual = manualBlob;

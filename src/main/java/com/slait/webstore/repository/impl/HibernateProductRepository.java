@@ -33,6 +33,7 @@ public class HibernateProductRepository implements ProductRepository {
 	public HibernateProductRepository(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 		listOfProducts = getAllProducts();
+		System.out.println("listOfProducts.size(): " + listOfProducts.size());
 		if(listOfProducts.size() == 0) {
 			System.out.println("db is empty");
 			createBasicProducts();
@@ -110,11 +111,14 @@ public class HibernateProductRepository implements ProductRepository {
 	public List<Product> getProductsByCategory(String category) {
 		listOfProducts = getAllProducts();
 		List<Product> productsByCategory = new ArrayList<Product>();
+		System.out.println("in getProductsByCategory(). searching for: " + category);
 		for (Product product: listOfProducts) {
+			System.out.println(product.getCategory() + ", ");
 			if(category.equalsIgnoreCase(product.getCategory())) {
 				productsByCategory.add(product);
 			}
 		}
+		System.out.println("in getProductsByCategory(): " + productsByCategory);
 		return productsByCategory;
 	}
 
@@ -182,7 +186,6 @@ public class HibernateProductRepository implements ProductRepository {
 				productsByManufacturer.add(product);
 			}
 		}
-		
 		return productsByManufacturer;
 	}
 

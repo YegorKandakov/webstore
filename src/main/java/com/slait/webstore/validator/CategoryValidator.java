@@ -14,7 +14,7 @@ ConstraintValidator<Category, String> {
 	@Override
 	public void initialize(Category arg0) {
 		allowedCategories = new ArrayList<String>();
-		allowedCategories.add("Smart Phone");
+		allowedCategories.add("Smartphone");
 		allowedCategories.add("Laptop");
 		allowedCategories.add("Tablet");
 	}
@@ -22,8 +22,10 @@ ConstraintValidator<Category, String> {
 	@Override
 	public boolean isValid(String category, 
 			ConstraintValidatorContext context) {
-		if(allowedCategories.contains(category)) {
-			return true;
+		for (String allowedCategory : allowedCategories) {
+			if(category.equalsIgnoreCase(allowedCategory)) {
+				return true;
+			}
 		}
 		return false;
 	}

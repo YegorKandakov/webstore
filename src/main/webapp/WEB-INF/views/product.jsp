@@ -18,13 +18,13 @@
 				<strong>Item Code: </strong><span class="label label-warning">${product.productId}</span>
 			</p>
 			<p>
-				<strong>Manufacturer</strong> : ${product.manufacturer}
+				<strong>Manufacturer</strong>: ${product.manufacturer}
 			</p>
 			<p>
-				<strong>Category</strong> : ${product.category}
+				<strong>Category</strong>: ${product.category}
 			</p>
 			<p>
-				<strong>Available units in stock</strong> : ${product.unitsInStock}
+				<strong>Available units in stock</strong>: ${product.unitsInStock}
 			</p>
 			<h4>${product.unitPrice} USD</h4>
 			<p ng-controller="cartCtrl">
