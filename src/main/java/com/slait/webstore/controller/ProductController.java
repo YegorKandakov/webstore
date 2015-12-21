@@ -116,7 +116,7 @@ public class ProductController {
 
 		String[] suppressedFields = result.getSuppressedFields();
 		if (suppressedFields.length > 0) {
-			throw new RuntimeException("Attempting to bing disallowed " + "fields: "
+			throw new RuntimeException("Attempting to bing disallowed fields: "
 					+ StringUtils.arrayToCommaDelimitedString(suppressedFields));
 		}
 

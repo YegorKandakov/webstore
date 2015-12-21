@@ -30,18 +30,6 @@ public class HibernateProductRepository implements ProductRepository {
   
   public HibernateProductRepository() { }
 	
-	public HibernateProductRepository(SessionFactory sessionFactory) {
-		this.sessionFactory = sessionFactory;
-		listOfProducts = getAllProducts();
-		System.out.println("listOfProducts.size(): " + listOfProducts.size());
-		if(listOfProducts.size() == 0) {
-			System.out.println("db is empty");
-			createBasicProducts();
-			putBasicProductsToDatabase();
-			System.out.println("db is filled with basic products");
-		}
-	}
-	
 	@Transactional
   public void addProduct(Product product) {
 		Session session = sessionFactory.getCurrentSession();
@@ -72,6 +60,7 @@ public class HibernateProductRepository implements ProductRepository {
 		tablet_Nexus.setManufacturer("Google");
 		tablet_Nexus.setUnitsInStock(1000);
 		
+		listOfBasicProducts = new ArrayList<Product>();
 		listOfBasicProducts.add(iphone);
 		listOfBasicProducts.add(laptop_dell);
 		listOfBasicProducts.add(tablet_Nexus);
@@ -93,7 +82,21 @@ public class HibernateProductRepository implements ProductRepository {
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		}
+		if(listOfProducts.size() == 0) {
+			System.out.println("db is empty");
+			createBasicProducts();
+			putBasicProductsToDatabase();
+			System.out.println("db is filled with basic products");
+		}
+//		retrieveImagesFromDB();
 		return listOfProducts;
+	}
+
+	@Transactional
+	private void retrieveImagesFromDB() {
+		for(Product product : listOfProducts) {
+			
+		}
 	}
 
 	@Transactional
