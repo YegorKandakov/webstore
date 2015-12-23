@@ -1,6 +1,8 @@
 package com.slait.webstore.repository.impl;
 
+import java.io.FileOutputStream;
 import java.math.BigDecimal;
+import java.sql.Blob;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -22,19 +24,20 @@ import com.slait.webstore.repository.ProductRepository;
 @Transactional
 public class HibernateProductRepository implements ProductRepository {
 
-	private List<Product> listOfBasicProducts; 
-	private List<Product> listOfProducts; 
+	private List<Product> listOfBasicProducts;
+	private List<Product> listOfProducts;
 
 	@Autowired
-  private SessionFactory sessionFactory;
-  
-  public HibernateProductRepository() { }
-	
+	private SessionFactory sessionFactory;
+
+	public HibernateProductRepository() {
+	}
+
 	@Transactional
-  public void addProduct(Product product) {
+	public void addProduct(Product product) {
 		Session session = sessionFactory.getCurrentSession();
-    session.save(product);
-  }
+		session.save(product);
+	}
 
 	private void createBasicProducts() {
 		Product iphone = new Product("P1234", "iPhone 6s", new BigDecimal(500));
@@ -44,32 +47,31 @@ public class HibernateProductRepository implements ProductRepository {
 		iphone.setManufacturer("Apple");
 		iphone.setUnitsInStock(1000);
 
-		Product laptop_dell = new Product("P1235", "Dell Inspiron",
-				new BigDecimal(700));
+		Product laptop_dell = new Product("P1235", "Dell Inspiron", new BigDecimal(
+				700));
 		laptop_dell.setDescription("Dell	Inspiron	14-inch Laptop (Black) "
 				+ "with 3rd Generation Intel Core processors");
 		laptop_dell.setCategory("Laptop");
 		laptop_dell.setManufacturer("Dell");
 		laptop_dell.setUnitsInStock(1000);
 
-		Product tablet_Nexus = new Product("P1236", "Nexus 7",
-				new BigDecimal(300));
+		Product tablet_Nexus = new Product("P1236", "Nexus 7", new BigDecimal(300));
 		tablet_Nexus.setDescription("Google	Nexus	7 is the	lightest	7 inch "
 				+ "tablet With	a quad-core	Qualcomm	Snapdragon	S4	Pro processor");
 		tablet_Nexus.setCategory("Tablet");
 		tablet_Nexus.setManufacturer("Google");
 		tablet_Nexus.setUnitsInStock(1000);
-		
+
 		listOfBasicProducts = new ArrayList<Product>();
 		listOfBasicProducts.add(iphone);
 		listOfBasicProducts.add(laptop_dell);
 		listOfBasicProducts.add(tablet_Nexus);
 	}
-	
+
 	@Transactional
 	private void putBasicProductsToDatabase() {
 		Session session = sessionFactory.getCurrentSession();
-		for(Product product : listOfBasicProducts) {
+		for (Product product : listOfBasicProducts) {
 			session.save(product);
 		}
 	}
@@ -78,32 +80,47 @@ public class HibernateProductRepository implements ProductRepository {
 	public List<Product> getAllProducts() {
 		Session session = sessionFactory.getCurrentSession();
 		try {
-			listOfProducts = (List<Product>)session.createQuery("from Product").list();
+			listOfProducts = (List<Product>) session.createQuery("from Product")
+					.list();
 		} catch (HibernateException e) {
 			e.printStackTrace();
 		}
-		if(listOfProducts.size() == 0) {
+		if (listOfProducts.size() == 0) {
 			System.out.println("db is empty");
 			createBasicProducts();
 			putBasicProductsToDatabase();
 			System.out.println("db is filled with basic products");
 		}
-//		retrieveImagesFromDB();
+		retrieveImagesFromDB();
 		return listOfProducts;
 	}
 
 	@Transactional
 	private void retrieveImagesFromDB() {
-		for(Product product : listOfProducts) {
-			
+		for (Product product : listOfProducts) {
+			try {
+				Blob blob = product.getProductImage();
+				if(blob != null) {
+					int blobLength = (int) blob.length();
+					byte[] blobAsBytes = blob.getBytes(1, blobLength);
+					String imageAddress = "src\\main\\webapp\\resources\\images\\" 
+					+ product.getProductId() + ".jpg";
+					FileOutputStream fos = new FileOutputStream(imageAddress);
+					fos.write(blobAsBytes);
+					fos.close();
+				}	
+			} catch (Exception e) {
+				System.out.println("Exception during retrieving image from database: ");
+				e.printStackTrace();
+			}
 		}
 	}
 
 	@Transactional
 	public Product getProductById(String productId) {
 		Session session = sessionFactory.getCurrentSession();
-		Product productById = (Product)session.get(Product.class, productId);
-		if(productById == null) {
+		Product productById = (Product) session.get(Product.class, productId);
+		if (productById == null) {
 			throw new ProductNotFoundException("No products found "
 					+ "with the product id: " + productId);
 		}
@@ -114,62 +131,59 @@ public class HibernateProductRepository implements ProductRepository {
 	public List<Product> getProductsByCategory(String category) {
 		listOfProducts = getAllProducts();
 		List<Product> productsByCategory = new ArrayList<Product>();
-		System.out.println("in getProductsByCategory(). searching for: " + category);
-		for (Product product: listOfProducts) {
-			System.out.println(product.getCategory() + ", ");
-			if(category.equalsIgnoreCase(product.getCategory())) {
+		for (Product product : listOfProducts) {
+			if (category.equalsIgnoreCase(product.getCategory())) {
 				productsByCategory.add(product);
 			}
 		}
-		System.out.println("in getProductsByCategory(): " + productsByCategory);
 		return productsByCategory;
 	}
 
 	@Transactional
-	public Set<Product> getProductsByFilter(Map<String, List<String>> 
-		filterParams) {
+	public Set<Product> getProductsByFilter(Map<String, List<String>> filterParams) {
 		listOfProducts = getAllProducts();
 		Set<Product> productsByBrand = new HashSet<Product>();
 		Set<Product> productsByCategory = new HashSet<Product>();
 		Set<String> criterias = filterParams.keySet();
-		System.out.println(criterias);
 		double low = 0;
 		double high = 0;
-		
-		if(criterias.contains("brand")) {
-			for(String brandName: filterParams.get("brand")) {
-				for(Product product: listOfProducts) {
-					if(brandName.equalsIgnoreCase(product.getManufacturer())) {
+
+		if (criterias.contains("brand")) {
+			for (String brandName : filterParams.get("brand")) {
+				for (Product product : listOfProducts) {
+					if (brandName.equalsIgnoreCase(product.getManufacturer())) {
 						productsByBrand.add(product);
 					}
 				}
 			}
 		}
-		
-		if(criterias.contains("category")) {
-			for(String category: filterParams.get("category")) {
+
+		if (criterias.contains("category")) {
+			for (String category : filterParams.get("category")) {
 				productsByCategory.addAll(this.getProductsByCategory(category));
 			}
 		}
-		
-		if(criterias.contains("low")){
-			for(String lowValue : filterParams.get("low")){
+
+		if (criterias.contains("low")) {
+			for (String lowValue : filterParams.get("low")) {
 				System.out.println(lowValue);
 				low = Double.parseDouble(lowValue);
 			}
 		}
-		
-		if(criterias.contains("high")){
-			for(String highValue : filterParams.get("high")){
+
+		if (criterias.contains("high")) {
+			for (String highValue : filterParams.get("high")) {
 				System.out.println(highValue);
 				high = Double.parseDouble(highValue);
 			}
 		}
-		
-		if(high != 0){
-			for(Product product : listOfProducts){
-				if(product.getUnitPrice().doubleValue() >= low && product.getUnitPrice().doubleValue() <= high){
-					productsByCategory.addAll(this.getProductsByManufacturer(product.getManufacturer()));
+
+		if (high != 0) {
+			for (Product product : listOfProducts) {
+				if (product.getUnitPrice().doubleValue() >= low
+						&& product.getUnitPrice().doubleValue() <= high) {
+					productsByCategory.addAll(this.getProductsByManufacturer(product
+							.getManufacturer()));
 				}
 			}
 		}
@@ -179,13 +193,13 @@ public class HibernateProductRepository implements ProductRepository {
 
 	@Transactional
 	public List<Product> getProductsByManufacturer(String manufacturer) {
-		System.out.println("Called getProductsByManufacturer(" 
-				+ manufacturer +") ##");
+		System.out.println("Called getProductsByManufacturer(" + manufacturer
+				+ ") ##");
 		listOfProducts = getAllProducts();
 		List<Product> productsByManufacturer = new ArrayList<Product>();
-		
-		for (Product product: listOfProducts) {
-			if(manufacturer.equalsIgnoreCase(product.getManufacturer())) {
+
+		for (Product product : listOfProducts) {
+			if (manufacturer.equalsIgnoreCase(product.getManufacturer())) {
 				productsByManufacturer.add(product);
 			}
 		}
